@@ -10,7 +10,7 @@ enum errorMsgs {
   UNSUPPORTED_ENV = "Error: Terminal environment is unsupported",
   EMPTY_OBJECT = "Error: Cannot search empty object",
   NO_RESULTS = "No results found",
-  FILE_DOES_NOT_EXIST = "Error: You file you requested does not exist",
+  FILE_DOES_NOT_EXIST = "Error: The file you requested does not exist",
 }
 
 // Represents all data required to perform a search
