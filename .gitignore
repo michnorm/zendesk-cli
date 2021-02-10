@@ -124,4 +124,7 @@ dist
 !.vscode/extensions.json
 *.code-workspace
 
+# Transpiled Typescript
+build/
+
 # End of https://www.toptal.com/developers/gitignore/api/node,vscode
