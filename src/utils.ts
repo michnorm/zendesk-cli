@@ -2,8 +2,11 @@ import chalk from "chalk";
 import { errorMsgs } from "./types";
 
 function printResults(output: object[]) {
-  if (output.length > 0) console.log(output);
-  else console.log(chalk.bold.yellow(errorMsgs.NO_RESULTS));
+  if (output.length > 0) {
+    console.log(output);
+  } else {
+    console.log(chalk.bold.yellow(errorMsgs.NO_RESULTS));
+  }
 }
 
 function printError(error: any) {

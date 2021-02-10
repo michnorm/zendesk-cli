@@ -8,6 +8,7 @@ enum errorMsgs {
   UNSUPPORTED_ENV = "Error: Terminal environment is unsupported",
   EMPTY_OBJECT = "Error: Cannot search empty object",
   NO_RESULTS = "No results found",
+  FILE_DOES_NOT_EXIST = "You file you requested does not exist",
 }
 
 interface State {

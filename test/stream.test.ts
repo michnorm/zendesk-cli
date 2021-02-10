@@ -53,12 +53,14 @@ describe("Stream functions", () => {
       expect(createJSONStream).is.a("function");
     });
     it("createJSONStream observable contains all JSON elements", () => {
-      createJSONStream("mock_1.json")
-        .pipe(toArray())
-        .toPromise()
-        .then((objects) => {
-          assert.deepEqual(objects, example_json_1);
-        });
+      createJSONStream("mock_1.json").then((stream) => {
+        stream
+          .pipe(toArray())
+          .toPromise()
+          .then((objects) => {
+            assert.deepEqual(objects, example_json_1);
+          });
+      });
     });
   });
 

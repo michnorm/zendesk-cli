@@ -1,4 +1,4 @@
-import { createReadStream } from "fs";
+import { createReadStream, existsSync, fstat } from "fs";
 import { parse } from "jsonstream";
 import { Observable } from "rxjs";
 import { filter, first, toArray } from "rxjs/operators";
@@ -10,20 +10,27 @@ function getValue<T, K extends keyof T>(obj: T, name: K): T[K] {
 }
 
 // Check types, unsubscribe from streams
-function createJSONStream(filePath: string): Observable<object> {
+function createJSONStream(filePath: string): Promise<Observable<object>> {
+  if (!existsSync(filePath))
+    return Promise.reject(errorMsgs.FILE_DOES_NOT_EXIST);
+
   const jsonFile = createReadStream(filePath);
 
-  return new Observable((observer) => {
-    jsonFile
-      .pipe(parse("*"))
-      .on("data", (data) => observer.next(data))
-      .on("error", (err) => observer.error(err))
-      .on("end", () => observer.complete());
-  });
+  return Promise.resolve(
+    new Observable((observer) => {
+      jsonFile
+        .pipe(parse("*"))
+        .on("data", (data) => observer.next(data))
+        .on("error", (err) => observer.error(err))
+        .on("end", () => observer.complete());
+    })
+  );
 }
 
 async function fetchProperties(filePath: string): Promise<string[]> {
-  const first_obj = await createJSONStream(filePath).pipe(first()).toPromise();
+  const stream = await createJSONStream(filePath);
+
+  const first_obj = await stream.pipe(first()).toPromise();
   const props = Object.keys(first_obj);
 
   if (props.length === 0) return Promise.reject(errorMsgs.EMPTY_OBJECT);
@@ -31,7 +38,9 @@ async function fetchProperties(filePath: string): Promise<string[]> {
 }
 
 async function searchJSON(state: State): Promise<object[]> {
-  return createJSONStream(state.searchFile)
+  const stream = await createJSONStream(state.searchFile);
+
+  return stream
     .pipe(
       filter((item: object) =>
         searchType(

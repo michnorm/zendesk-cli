@@ -13,5 +13,6 @@ var errorMsgs;
     errorMsgs["UNSUPPORTED_ENV"] = "Error: Terminal environment is unsupported";
     errorMsgs["EMPTY_OBJECT"] = "Error: Cannot search empty object";
     errorMsgs["NO_RESULTS"] = "No results found";
+    errorMsgs["FILE_DOES_NOT_EXIST"] = "You file you requested does not exist";
 })(errorMsgs || (errorMsgs = {}));
 exports.errorMsgs = errorMsgs;

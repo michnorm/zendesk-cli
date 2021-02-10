@@ -49,23 +49,28 @@ function getValue(obj, name) {
 exports.getValue = getValue;
 // Check types, unsubscribe from streams
 function createJSONStream(filePath) {
+    if (!fs_1.existsSync(filePath))
+        return Promise.reject(types_1.errorMsgs.FILE_DOES_NOT_EXIST);
     var jsonFile = fs_1.createReadStream(filePath);
-    return new rxjs_1.Observable(function (observer) {
+    return Promise.resolve(new rxjs_1.Observable(function (observer) {
         jsonFile
             .pipe(jsonstream_1.parse("*"))
             .on("data", function (data) { return observer.next(data); })
             .on("error", function (err) { return observer.error(err); })
             .on("end", function () { return observer.complete(); });
-    });
+    }));
 }
 exports.createJSONStream = createJSONStream;
 function fetchProperties(filePath) {
     return __awaiter(this, void 0, void 0, function () {
-        var first_obj, props;
+        var stream, first_obj, props;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, createJSONStream(filePath).pipe(operators_1.first()).toPromise()];
+                case 0: return [4 /*yield*/, createJSONStream(filePath)];
                 case 1:
+                    stream = _a.sent();
+                    return [4 /*yield*/, stream.pipe(operators_1.first()).toPromise()];
+                case 2:
                     first_obj = _a.sent();
                     props = Object.keys(first_obj);
                     if (props.length === 0)
@@ -80,12 +85,18 @@ function fetchProperties(filePath) {
 exports.fetchProperties = fetchProperties;
 function searchJSON(state) {
     return __awaiter(this, void 0, void 0, function () {
+        var stream;
         return __generator(this, function (_a) {
-            return [2 /*return*/, createJSONStream(state.searchFile)
-                    .pipe(operators_1.filter(function (item) {
-                    return utils_1.searchType(getValue(item, state.searchField), state.searchQuery);
-                }), operators_1.toArray())
-                    .toPromise()];
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, createJSONStream(state.searchFile)];
+                case 1:
+                    stream = _a.sent();
+                    return [2 /*return*/, stream
+                            .pipe(operators_1.filter(function (item) {
+                            return utils_1.searchType(getValue(item, state.searchField), state.searchQuery);
+                        }), operators_1.toArray())
+                            .toPromise()];
+            }
         });
     });
 }
