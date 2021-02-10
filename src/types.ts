@@ -22,4 +22,4 @@ interface Choice<T> {
   value: T;
 }
 
-export { State, Choice, JSONFiles, errorMsgs };
+export { State, JSONFiles, errorMsgs, Choice };

@@ -8,7 +8,7 @@ import {
 import inquirer from "inquirer";
 import * as figlet from "figlet";
 import { searchJSON } from "./stream";
-import { printResults, printError } from "./utils";
+import { printStream, printError } from "./utils";
 
 console.log(figlet.textSync("Zendesk-CLI"));
 
@@ -21,17 +21,18 @@ async function main() {
       searchQueryPrompt(),
     ])) as State;
 
-    const results = await searchJSON(state);
-
-    printResults(results);
+    const stream = await searchJSON(state);
+    printStream(stream, errorMsgs.NO_RESULTS, searchAgain);
   } catch (error) {
     if (error.isTtyError) printError(errorMsgs.UNSUPPORTED_ENV);
     else printError(error);
-  } finally {
-    const { searchAgain } = await inquirer.prompt([searchAgainPrompt()]);
-
-    if (searchAgain) main();
   }
+}
+
+function searchAgain() {
+  inquirer.prompt([searchAgainPrompt()]).then(({ searchAgain }) => {
+    if (searchAgain) main();
+  });
 }
 
 main();

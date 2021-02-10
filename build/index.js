@@ -68,11 +68,11 @@ console.log(figlet.textSync("Zendesk-CLI"));
 // Need to check for promise errors here
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var state, results, error_1, searchAgain;
+        var state, stream, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 3, 4, 6]);
+                    _a.trys.push([0, 3, , 4]);
                     return [4 /*yield*/, inquirer_1.default.prompt([
                             prompts_1.fileSelectPrompt(),
                             prompts_1.fieldSelectPrompt(),
@@ -82,25 +82,26 @@ function main() {
                     state = (_a.sent());
                     return [4 /*yield*/, stream_1.searchJSON(state)];
                 case 2:
-                    results = _a.sent();
-                    utils_1.printResults(results);
-                    return [3 /*break*/, 6];
+                    stream = _a.sent();
+                    utils_1.printStream(stream, types_1.errorMsgs.NO_RESULTS, searchAgain);
+                    return [3 /*break*/, 4];
                 case 3:
                     error_1 = _a.sent();
                     if (error_1.isTtyError)
                         utils_1.printError(types_1.errorMsgs.UNSUPPORTED_ENV);
                     else
                         utils_1.printError(error_1);
-                    return [3 /*break*/, 6];
-                case 4: return [4 /*yield*/, inquirer_1.default.prompt([prompts_1.searchAgainPrompt()])];
-                case 5:
-                    searchAgain = (_a.sent()).searchAgain;
-                    if (searchAgain)
-                        main();
-                    return [7 /*endfinally*/];
-                case 6: return [2 /*return*/];
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
             }
         });
+    });
+}
+function searchAgain() {
+    inquirer_1.default.prompt([prompts_1.searchAgainPrompt()]).then(function (_a) {
+        var searchAgain = _a.searchAgain;
+        if (searchAgain)
+            main();
     });
 }
 main();

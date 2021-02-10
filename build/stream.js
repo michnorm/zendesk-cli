@@ -57,7 +57,10 @@ function createJSONStream(filePath) {
             .pipe(jsonstream_1.parse("*"))
             .on("data", function (data) { return observer.next(data); })
             .on("error", function (err) { return observer.error(err); })
-            .on("end", function () { return observer.complete(); });
+            .on("end", function () {
+            jsonFile.destroy();
+            return observer.complete();
+        });
     }));
 }
 exports.createJSONStream = createJSONStream;
@@ -91,11 +94,9 @@ function searchJSON(state) {
                 case 0: return [4 /*yield*/, createJSONStream(state.searchFile)];
                 case 1:
                     stream = _a.sent();
-                    return [2 /*return*/, stream
-                            .pipe(operators_1.filter(function (item) {
+                    return [2 /*return*/, stream.pipe(operators_1.filter(function (item) {
                             return utils_1.searchType(getValue(item, state.searchField), state.searchQuery);
-                        }), operators_1.toArray())
-                            .toPromise()];
+                        }))];
             }
         });
     });

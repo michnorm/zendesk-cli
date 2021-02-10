@@ -1,7 +1,7 @@
 import { createReadStream, existsSync, fstat } from "fs";
 import { parse } from "jsonstream";
-import { Observable } from "rxjs";
-import { filter, first, toArray } from "rxjs/operators";
+import { Observable, of, Subscribable } from "rxjs";
+import { filter, finalize, first, tap, toArray } from "rxjs/operators";
 import { errorMsgs, State } from "./types";
 import { searchType } from "./utils";
 
@@ -22,7 +22,10 @@ function createJSONStream(filePath: string): Promise<Observable<object>> {
         .pipe(parse("*"))
         .on("data", (data) => observer.next(data))
         .on("error", (err) => observer.error(err))
-        .on("end", () => observer.complete());
+        .on("end", () => {
+          jsonFile.destroy();
+          return observer.complete();
+        });
     })
   );
 }
@@ -37,20 +40,17 @@ async function fetchProperties(filePath: string): Promise<string[]> {
   else return props;
 }
 
-async function searchJSON(state: State): Promise<object[]> {
+async function searchJSON(state: State): Promise<Observable<object>> {
   const stream = await createJSONStream(state.searchFile);
 
-  return stream
-    .pipe(
-      filter((item: object) =>
-        searchType(
-          getValue(item, state.searchField as keyof object),
-          state.searchQuery
-        )
-      ),
-      toArray()
+  return stream.pipe(
+    filter((item: object) =>
+      searchType(
+        getValue(item, state.searchField as keyof object),
+        state.searchQuery
+      )
     )
-    .toPromise();
+  );
 }
 
 export { createJSONStream, fetchProperties, searchJSON, getValue };

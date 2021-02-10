@@ -1,12 +1,18 @@
 import chalk from "chalk";
-import { errorMsgs } from "./types";
+import { Observable } from "rxjs";
+import { defaultIfEmpty, finalize } from "rxjs/operators";
 
-function printResults(output: object[]) {
-  if (output.length > 0) {
-    console.log(output);
-  } else {
-    console.log(chalk.bold.yellow(errorMsgs.NO_RESULTS));
-  }
+function printStream<T>(
+  stream: Observable<T>,
+  emptyResult: T | string,
+  callback: () => void
+) {
+  stream
+    .pipe(
+      defaultIfEmpty(emptyResult),
+      finalize(() => callback())
+    )
+    .subscribe(console.log);
 }
 
 function printError(error: any) {
@@ -49,7 +55,7 @@ function searchType(
 
 export {
   searchType,
-  printResults,
+  printStream,
   printError,
   cleanString,
   stringMatch,

@@ -91,8 +91,13 @@ describe("Stream functions", () => {
         searchQuery: "1",
       };
 
-      searchJSON(state).then((result) => {
-        assert.deepEqual(result[0], example_json_1[0]);
+      searchJSON(state).then((stream) => {
+        stream
+          .pipe(toArray())
+          .toPromise()
+          .then((result) => {
+            assert.deepEqual(result[0], example_json_1[0]);
+          });
       });
     });
     it("searchJSON returns multiple results", () => {
@@ -102,8 +107,13 @@ describe("Stream functions", () => {
         searchQuery: "example.com",
       };
 
-      searchJSON(state).then((result) => {
-        assert.deepEqual(result, example_json_1);
+      searchJSON(state).then((stream) => {
+        stream
+          .pipe(toArray())
+          .toPromise()
+          .then((result) => {
+            assert.deepEqual(result, example_json_1);
+          });
       });
     });
     it("searchJSON returns correct result for array", () => {
@@ -113,8 +123,13 @@ describe("Stream functions", () => {
         searchQuery: "australia",
       };
 
-      searchJSON(state).then((result) => {
-        assert.deepEqual(result[0], example_json_1[0]);
+      searchJSON(state).then((stream) => {
+        stream
+          .pipe(toArray())
+          .toPromise()
+          .then((result) => {
+            assert.deepEqual(result[0], example_json_1[0]);
+          });
       });
     });
     it("searchJSON returns no results", () => {
@@ -124,8 +139,13 @@ describe("Stream functions", () => {
         searchQuery: "zendesk.com",
       };
 
-      searchJSON(state).then((result) => {
-        assert.deepEqual(result, []);
+      searchJSON(state).then((stream) => {
+        stream
+          .pipe(toArray())
+          .toPromise()
+          .then((result) => {
+            assert.deepEqual(result, []);
+          });
       });
     });
   });
