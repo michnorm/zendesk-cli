@@ -43,27 +43,38 @@ var rxjs_1 = require("rxjs");
 var operators_1 = require("rxjs/operators");
 var types_1 = require("./types");
 var utils_1 = require("./utils");
+/*
+  Given an object and a key of that object, returns the value stored
+  at that key.
+*/
 function getValue(obj, name) {
     return obj[name];
 }
 exports.getValue = getValue;
-// Check types, unsubscribe from streams
+/*
+  Takes a path to a JSON file and returns a stream of JSON objects. This means
+  the JSON file isn't loaded into memory all at once. This is particularly
+  advantageous for very large JSON files.
+*/
 function createJSONStream(filePath) {
+    // Check if file exists, if not returned rejected promise
     if (!fs_1.existsSync(filePath))
         return Promise.reject(types_1.errorMsgs.FILE_DOES_NOT_EXIST);
     var jsonFile = fs_1.createReadStream(filePath);
     return Promise.resolve(new rxjs_1.Observable(function (observer) {
         jsonFile
-            .pipe(jsonstream_1.parse("*"))
+            .pipe(jsonstream_1.parse("*")) // Parses the ReadStream into JSON objects
             .on("data", function (data) { return observer.next(data); })
             .on("error", function (err) { return observer.error(err); })
-            .on("end", function () {
-            jsonFile.destroy();
-            return observer.complete();
-        });
+            .on("end", function () { return observer.complete(); });
     }));
 }
 exports.createJSONStream = createJSONStream;
+/*
+  Takes a path to a JSON file and returns the properties of the JSON objects.
+  This function is used to display the available search fields. Note, an assumption
+  is made that all objects in the JSON file have the same fields/properties.
+*/
 function fetchProperties(filePath) {
     return __awaiter(this, void 0, void 0, function () {
         var stream, first_obj, props;
@@ -76,6 +87,7 @@ function fetchProperties(filePath) {
                 case 2:
                     first_obj = _a.sent();
                     props = Object.keys(first_obj);
+                    // If the object has no keys, return rejected promise
                     if (props.length === 0)
                         return [2 /*return*/, Promise.reject(types_1.errorMsgs.EMPTY_OBJECT)];
                     else
@@ -86,6 +98,10 @@ function fetchProperties(filePath) {
     });
 }
 exports.fetchProperties = fetchProperties;
+/*
+  Function takes a state and performs the linear search on the JSON objects.
+  Returns the resulting stream, which is later used to display results.
+*/
 function searchJSON(state) {
     return __awaiter(this, void 0, void 0, function () {
         var stream;
@@ -94,6 +110,7 @@ function searchJSON(state) {
                 case 0: return [4 /*yield*/, createJSONStream(state.searchFile)];
                 case 1:
                     stream = _a.sent();
+                    // Filter out objects with fields that don't match query
                     return [2 /*return*/, stream.pipe(operators_1.filter(function (item) {
                             return utils_1.searchType(getValue(item, state.searchField), state.searchQuery);
                         }))];

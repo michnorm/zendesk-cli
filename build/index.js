@@ -65,7 +65,11 @@ var figlet = __importStar(require("figlet"));
 var stream_1 = require("./stream");
 var utils_1 = require("./utils");
 console.log(figlet.textSync("Zendesk-CLI"));
-// Need to check for promise errors here
+/*
+  Program entrypoint. Uses inquirer to prompt the user to answer the required
+  questions. This will result in a state that can be used to perform the search.
+  All errors are propagated and displayed by this function.
+*/
 function main() {
     return __awaiter(this, void 0, void 0, function () {
         var state, stream, error_1;
@@ -97,6 +101,10 @@ function main() {
         });
     });
 }
+/*
+  Function that uses inquirer prompt to check whether the user wants
+  to search again. If so, call the main function.
+*/
 function searchAgain() {
     inquirer_1.default.prompt([prompts_1.searchAgainPrompt()]).then(function (_a) {
         var searchAgain = _a.searchAgain;

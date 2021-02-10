@@ -3,6 +3,9 @@ import { fetchProperties } from "./stream";
 import { Choice } from "./types";
 import { JSONFiles } from "./types";
 
+/*
+  Prompt that lists available files to search from.
+*/
 function fileSelectPrompt(): ListQuestion {
   const options: Choice<string>[] = [
     { name: "Tickets", value: JSONFiles.TICKETS },
@@ -18,6 +21,9 @@ function fileSelectPrompt(): ListQuestion {
   };
 }
 
+/*
+  Prompt which accepts search query string from user.
+*/
 function searchQueryPrompt(): Question {
   return {
     name: "searchQuery",
@@ -26,6 +32,10 @@ function searchQueryPrompt(): Question {
   };
 }
 
+/*
+  Prompt which lists all available search fields. This is dynamic and uses the
+  previous question (fileSelectPrompt) to choose which file to fetch JSON keys from.
+*/
 function fieldSelectPrompt(): ListQuestion {
   return {
     name: "searchField",
@@ -35,6 +45,9 @@ function fieldSelectPrompt(): ListQuestion {
   };
 }
 
+/*
+  Yes or no prompt used to check whether the user wants to search again.
+*/
 function searchAgainPrompt(): ConfirmQuestion {
   return {
     name: "searchAgain",

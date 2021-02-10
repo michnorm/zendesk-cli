@@ -12,7 +12,11 @@ import { printStream, printError } from "./utils";
 
 console.log(figlet.textSync("Zendesk-CLI"));
 
-// Need to check for promise errors here
+/*
+  Program entrypoint. Uses inquirer to prompt the user to answer the required
+  questions. This will result in a state that can be used to perform the search.
+  All errors are propagated and displayed by this function.
+*/
 async function main() {
   try {
     const state = (await inquirer.prompt([
@@ -29,6 +33,10 @@ async function main() {
   }
 }
 
+/*
+  Function that uses inquirer prompt to check whether the user wants
+  to search again. If so, call the main function.
+*/
 function searchAgain() {
   inquirer.prompt([searchAgainPrompt()]).then(({ searchAgain }) => {
     if (searchAgain) main();
